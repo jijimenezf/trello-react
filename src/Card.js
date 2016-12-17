@@ -11,7 +11,8 @@ class Card extends Component {
       value: '',
       title: '',
       isEditable: false,
-      index: 0
+      index: 0,
+      modalTitle: ''
     };
     //Binding methods
     this.addASingleTask = this.addASingleTask.bind(this);
@@ -21,6 +22,7 @@ class Card extends Component {
     this.handleChangeTitle = this.handleChangeTitle.bind(this);
     this.handleChangeDesc = this.handleChangeDesc.bind(this);
     this.validateData = this.validateData.bind(this);
+    this.dismissModal = this.dismissModal.bind(this);
   };
 
   /*
@@ -29,6 +31,7 @@ class Card extends Component {
   addASingleTask() {
     var pos = this.state.key;
     this.setState({ key: pos++ });
+    this.setState({ modalTitle: 'You\'re adding a task'});
     this.setState({ smShow: true });
     this.setState({ title: '' });
     this.setState({ value: '' });
@@ -56,6 +59,7 @@ class Card extends Component {
     this.setState({ value: item.description });
     this.setState({ index: item.index });
     this.setState({ isEditable: true });
+    this.setState({ modalTitle: 'You\'re editing a task'});
     this.setState({ smShow: true });
   }
 
@@ -75,7 +79,7 @@ class Card extends Component {
   }
 
   /*
-  * Dismiss the modal window
+  * Dismiss the modal window saving changes
   */
   closeModal() {
     var key = this.state.key, index = this.state.index, item;
@@ -115,6 +119,16 @@ class Card extends Component {
   }
 
   /*
+  * Dismiss the modal window without saving changes
+  */
+  dismissModal() {
+    if (this.state.isEditable) {
+      this.setState({ isEditable: false });
+    }
+    this.setState({ smShow: false });
+  }
+
+  /*
   * Creates a tooltip for every single column
   */
   tooltip = (<Tooltip id="tooltip"><strong>{this.props.tooltip}</strong></Tooltip>);
@@ -133,8 +147,8 @@ class Card extends Component {
           <Button bsStyle="success" bsSize="small" onClick={this.addASingleTask}>Add Item</Button>
         </OverlayTrigger>
         <Modal bsSize="large" aria-labelledby="contained-modal-title-lg"
-               show={this.state.smShow} onHide={this.closeModal}>
-          <Modal.Header closeButton></Modal.Header>
+               show={this.state.smShow} onHide={this.dismissModal}>
+          <Modal.Header closeButton><Modal.Title>{this.state.modalTitle}</Modal.Title></Modal.Header>
           <Modal.Body>
             <form>
               <FormControl type="text" value={this.state.title} maxLength="25"
